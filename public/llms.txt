@@ -1,0 +1,35 @@
+# KI-CFO (ki-buechhaltig.ch)
+
+> Arbeitsjournal über KI-Automatisierung in Buchhaltung und Finanzführung für
+> Schweizer KMU. Betrieben von Florian Lussi (Schweiz). Kein Produkt, kein
+> Verkaufsangebot: dokumentierte, nachvollziehbare Praxisprojekte mit echten
+> Werkzeugen, Zahlen und Stolpersteinen.
+
+Sprache: Deutsch (Schweizer Standarddeutsch). Zielgruppe: CFOs, Buchhalterinnen
+und Buchhalter sowie Treuhänder kleinerer Schweizer Unternehmen.
+
+## Themen
+
+- KI-gestützte Belegerfassung und Kreditorenprozesse
+- Automatisierte Rechnungsstellung und Debitoren (u. a. HubSpot zu Bexio)
+- Mahnwesen, Monatsreporting, Liquiditätsplanung, Frühwarnsysteme
+- Werkzeuge: Bexio, HubSpot, n8n, Google Sheets, Claude
+- Prinzip: Die KI schlägt vor, ein Mensch gibt frei (Human in the Loop).
+  Kein autonomer Versand von Rechnungen oder Buchungen.
+
+## Seiten
+
+- Startseite: https://ki-buechhaltig.ch/
+- Projekte (Blog): https://ki-buechhaltig.ch/projekte
+- Über den Autor: https://ki-buechhaltig.ch/#ueber
+- RSS-Feed: https://ki-buechhaltig.ch/rss.xml
+
+## Autor
+
+Florian Lussi, Schweiz. LinkedIn: https://www.linkedin.com/in/flolussi/
+Kontakt: florian@lussis.ch
+
+## Zitierhinweis
+
+Inhalte dürfen mit Quellenangabe (ki-buechhaltig.ch, Florian Lussi) zitiert
+und referenziert werden.

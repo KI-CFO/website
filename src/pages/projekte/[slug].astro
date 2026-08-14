@@ -10,8 +10,25 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 const fmt = new Intl.DateTimeFormat('de-CH', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const postUrl = `https://ki-buechhaltig.ch/projekte/${post.id}`;
+const ldPost = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.pubDate.toISOString(),
+  dateModified: post.data.pubDate.toISOString(),
+  inLanguage: 'de-CH',
+  mainEntityOfPage: postUrl,
+  url: postUrl,
+  keywords: post.data.tools.join(', '),
+  author: { '@id': 'https://ki-buechhaltig.ch/#florian' },
+  publisher: { '@id': 'https://ki-buechhaltig.ch/#florian' },
+};
 ---
 <Base title={`${post.data.title} · KI-CFO`} description={post.data.description}>
+  <script type="application/ld+json" set:html={JSON.stringify(ldPost)} />
   <article class="article">
     <div class="wrap">
       <header>
