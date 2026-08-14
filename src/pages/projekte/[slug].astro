@@ -11,7 +11,7 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 const fmt = new Intl.DateTimeFormat('de-CH', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
-<Base title={`${post.data.title} — KI-CFO`} description={post.data.description}>
+<Base title={`${post.data.title} · KI-CFO`} description={post.data.description}>
   <article class="article">
     <div class="wrap">
       <header>
