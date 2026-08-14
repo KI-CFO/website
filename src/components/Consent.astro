@@ -1,0 +1,118 @@
+<div id="consent-banner" class="consent-banner" hidden role="dialog" aria-modal="false" aria-labelledby="consent-title">
+  <div class="consent-inner">
+    <p id="consent-title" class="consent-heading">Cookies &amp; Statistik</p>
+    <p class="consent-text">
+      Diese Seite nutzt eine selbst gehostete, anonymisierte Besucherstatistik (Matomo),
+      um zu verstehen, welche Inhalte gelesen werden. Keine Werbung, keine Datenweitergabe
+      an Dritte. Details in der <a href="/datenschutz">Datenschutzerklärung</a>.
+    </p>
+    <div id="consent-custom" class="consent-custom" hidden>
+      <label class="pill consent-locked"><input type="checkbox" checked disabled /> Notwendig (immer aktiv)</label>
+      <label class="pill"><input type="checkbox" id="consent-analytics-toggle" /> Statistik (Matomo)</label>
+    </div>
+    <div class="consent-actions">
+      <button type="button" class="btn" id="consent-accept">Alle akzeptieren</button>
+      <button type="button" class="btn-ghost" id="consent-reject">Nur notwendige</button>
+      <button type="button" class="btn-ghost" id="consent-customize">Anpassen</button>
+      <button type="button" class="btn" id="consent-save" hidden>Auswahl speichern</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'consent-v1';
+  const MAX_AGE_MS = 365 * 24 * 60 * 60 * 1000; // Einwilligung gilt 12 Monate
+  const MATOMO_URL = 'https://stats.ki-buechhaltig.ch/';
+  const MATOMO_SITE_ID = '1';
+
+  const banner = document.getElementById('consent-banner')!;
+  const customArea = document.getElementById('consent-custom')!;
+  const toggle = document.getElementById('consent-analytics-toggle') as HTMLInputElement;
+  const btnAccept = document.getElementById('consent-accept')!;
+  const btnReject = document.getElementById('consent-reject')!;
+  const btnCustomize = document.getElementById('consent-customize')!;
+  const btnSave = document.getElementById('consent-save')!;
+
+  function readConsent(): { analytics: boolean; ts: number } | null {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (typeof parsed.analytics !== 'boolean' || typeof parsed.ts !== 'number') return null;
+      if (Date.now() - parsed.ts > MAX_AGE_MS) return null;
+      return parsed;
+    } catch {
+      return null;
+    }
+  }
+
+  let matomoLoaded = false;
+  function loadMatomo() {
+    if (matomoLoaded) return;
+    matomoLoaded = true;
+    const w = window as any;
+    w._paq = w._paq || [];
+    w._paq.push(['trackPageView']);
+    w._paq.push(['enableLinkTracking']);
+    w._paq.push(['setTrackerUrl', MATOMO_URL + 'matomo.php']);
+    w._paq.push(['setSiteId', MATOMO_SITE_ID]);
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = MATOMO_URL + 'matomo.js';
+    document.head.appendChild(s);
+  }
+
+  function clearMatomoCookies() {
+    document.cookie.split(';').forEach((c) => {
+      const name = c.split('=')[0].trim();
+      if (name.startsWith('_pk_') || name === 'MATOMO_SESSID' || name === 'mtm_consent') {
+        const base = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+        document.cookie = base;
+        document.cookie = `${base}; domain=.${location.hostname}`;
+      }
+    });
+  }
+
+  function resolve(analytics: boolean, persist: boolean) {
+    if (persist) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ analytics, ts: Date.now() }));
+    }
+    if (analytics) {
+      loadMatomo();
+    } else {
+      clearMatomoCookies();
+    }
+    banner.hidden = true;
+    (window as any).__consentResolved = true;
+    window.dispatchEvent(new Event('consent:resolved'));
+  }
+
+  btnAccept.addEventListener('click', () => resolve(true, true));
+  btnReject.addEventListener('click', () => resolve(false, true));
+  btnCustomize.addEventListener('click', () => {
+    customArea.hidden = false;
+    btnSave.hidden = false;
+    btnCustomize.setAttribute('hidden', '');
+    btnAccept.setAttribute('hidden', '');
+  });
+  btnSave.addEventListener('click', () => resolve(toggle.checked, true));
+
+  // Footer-Link «Cookie-Einstellungen» öffnet das Banner erneut (Widerruf jederzeit).
+  document.getElementById('cookie-settings-link')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    const existing = readConsent();
+    toggle.checked = existing?.analytics ?? false;
+    customArea.hidden = false;
+    btnSave.hidden = false;
+    btnCustomize.setAttribute('hidden', '');
+    btnAccept.removeAttribute('hidden');
+    banner.hidden = false;
+  });
+
+  const existing = readConsent();
+  if (existing) {
+    resolve(existing.analytics, false);
+  } else {
+    banner.hidden = false;
+  }
+</script>

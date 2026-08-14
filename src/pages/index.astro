@@ -8,9 +8,7 @@ const posts = (await getCollection('projekte', ({ data }) => !data.draft))
 
 const fmt = new Intl.DateTimeFormat('de-CH', { year: 'numeric', month: 'long', day: 'numeric' });
 
-// Web3Forms access key. Solange der Platzhalter drin ist, wird die Umfrage nicht angezeigt.
-const W3F_KEY = 'REPLACE_WITH_WEB3FORMS_KEY';
-const surveyActive = W3F_KEY !== 'REPLACE_WITH_WEB3FORMS_KEY';
+const W3F_KEY = '2fcddb1d-4c34-4bcf-baf7-8bc8f18cb274';
 ---
 <Base
   title="KI-CFO · KI in Buchhaltung und Finanzführung, dokumentiert"
@@ -117,41 +115,15 @@ const surveyActive = W3F_KEY !== 'REPLACE_WITH_WEB3FORMS_KEY';
     </section>
   )}
 
-  {surveyActive && (
-    <section class="section" id="umfrage">
-      <div class="wrap">
-        <p class="section-label">Kurze Umfrage</p>
-        <h2>Wo stehst du mit KI?</h2>
-        <p class="muted" style="max-width: 40rem;">Zwei Fragen, zehn Sekunden, anonym. Die Antworten helfen mir zu entscheiden, welche Projekte ich als Nächstes dokumentiere.</p>
-        <form id="ki-umfrage" data-key={W3F_KEY}>
-          <fieldset class="survey-group">
-            <legend>Bist du als CFO oder Buchhalter:in tätig?</legend>
-            <div class="survey-options">
-              <label class="pill"><input type="radio" name="rolle" value="CFO" required /> CFO</label>
-              <label class="pill"><input type="radio" name="rolle" value="Buchhalter:in" /> Buchhalter:in</label>
-              <label class="pill"><input type="radio" name="rolle" value="Treuhand" /> Treuhand</label>
-              <label class="pill"><input type="radio" name="rolle" value="Etwas anderes" /> Etwas anderes</label>
-            </div>
-          </fieldset>
-          <fieldset class="survey-group">
-            <legend>Wo nutzt du KI bereits? (Mehrfachauswahl)</legend>
-            <div class="survey-options">
-              <label class="pill"><input type="checkbox" name="ki_einsatz" value="Belegerfassung / Kreditoren" /> Belegerfassung / Kreditoren</label>
-              <label class="pill"><input type="checkbox" name="ki_einsatz" value="Rechnungsstellung / Debitoren" /> Rechnungsstellung / Debitoren</label>
-              <label class="pill"><input type="checkbox" name="ki_einsatz" value="Mahnwesen" /> Mahnwesen</label>
-              <label class="pill"><input type="checkbox" name="ki_einsatz" value="Reporting / Abschluss" /> Reporting / Abschluss</label>
-              <label class="pill"><input type="checkbox" name="ki_einsatz" value="Liquiditätsplanung" /> Liquiditätsplanung</label>
-              <label class="pill"><input type="checkbox" name="ki_einsatz" value="Texte / E-Mails" /> Texte / E-Mails</label>
-              <label class="pill"><input type="checkbox" name="ki_einsatz" value="Noch gar nicht" /> Noch gar nicht</label>
-            </div>
-          </fieldset>
-          <input type="checkbox" name="botcheck" class="hidden-field" tabindex="-1" autocomplete="off" />
-          <button type="submit" class="btn">Absenden</button>
-          <p class="survey-status" role="status" aria-live="polite"></p>
-        </form>
-      </div>
-    </section>
-  )}
+  <section class="section" id="umfrage">
+    <div class="wrap">
+      <p class="section-label">Kurze Umfrage</p>
+      <h2>Wo stehst du mit KI?</h2>
+      <p class="muted" style="max-width: 40rem;">Zwei Fragen, zehn Sekunden, anonym.
+      Die Antworten helfen mir zu entscheiden, welche Projekte ich als Nächstes dokumentiere.</p>
+      <button type="button" class="btn" id="umfrage-open">Zur Umfrage</button>
+    </div>
+  </section>
 
   <section class="section" id="ueber">
     <div class="wrap">
@@ -168,48 +140,128 @@ const surveyActive = W3F_KEY !== 'REPLACE_WITH_WEB3FORMS_KEY';
           Zu kaufen gibt es hier nichts, zu lesen einiges: echte Projekte, echte
           Werkzeuge (Bexio, HubSpot, n8n, Claude), echte Stolpersteine. Wenn du an
           ähnlichen Fragen arbeitest, freue ich mich auf den Austausch:
-          <a href="mailto:florian@lussis.ch">florian@lussis.ch</a> oder auf
-          <a href="https://www.linkedin.com/in/flolussi/" rel="me noopener" target="_blank">LinkedIn</a>.
+          <a href="mailto:florian@lussis.ch">florian@lussis.ch</a>
         </p>
+        <a class="person" href="https://www.linkedin.com/in/flolussi/" rel="me noopener" target="_blank">
+          <img src="/florian-lussi.webp" alt="Florian Lussi" width="64" height="64" loading="lazy" />
+          <span class="p-text">
+            <span class="p-name">Florian Lussi</span>
+            <span class="p-role">Autor dieser Seite</span>
+          </span>
+          <span class="p-arrow" aria-hidden="true">↗</span>
+        </a>
       </div>
     </div>
   </section>
 
+  <dialog id="umfrage-modal" aria-labelledby="umfrage-titel">
+    <div class="modal-inner">
+      <h2 id="umfrage-titel">Wo stehst du mit KI?</h2>
+      <p class="muted">Zwei Fragen, zehn Sekunden, anonym.</p>
+      <form id="ki-umfrage" data-key={W3F_KEY}>
+        <fieldset class="survey-group">
+          <legend>Bist du als CFO oder Buchhalter:in tätig?</legend>
+          <div class="survey-options">
+            <label class="pill"><input type="radio" name="rolle" value="CFO" required /> CFO</label>
+            <label class="pill"><input type="radio" name="rolle" value="Buchhalter:in" /> Buchhalter:in</label>
+            <label class="pill"><input type="radio" name="rolle" value="Treuhand" /> Treuhand</label>
+            <label class="pill"><input type="radio" name="rolle" value="Etwas anderes" /> Etwas anderes</label>
+          </div>
+        </fieldset>
+        <fieldset class="survey-group">
+          <legend>Wo nutzt du KI bereits? (Mehrfachauswahl)</legend>
+          <div class="survey-options">
+            <label class="pill"><input type="checkbox" name="ki_einsatz" value="Belegerfassung / Kreditoren" /> Belegerfassung / Kreditoren</label>
+            <label class="pill"><input type="checkbox" name="ki_einsatz" value="Rechnungsstellung / Debitoren" /> Rechnungsstellung / Debitoren</label>
+            <label class="pill"><input type="checkbox" name="ki_einsatz" value="Mahnwesen" /> Mahnwesen</label>
+            <label class="pill"><input type="checkbox" name="ki_einsatz" value="Reporting / Abschluss" /> Reporting / Abschluss</label>
+            <label class="pill"><input type="checkbox" name="ki_einsatz" value="Liquiditätsplanung" /> Liquiditätsplanung</label>
+            <label class="pill"><input type="checkbox" name="ki_einsatz" value="Texte / E-Mails" /> Texte / E-Mails</label>
+            <label class="pill"><input type="checkbox" name="ki_einsatz" value="Noch gar nicht" /> Noch gar nicht</label>
+          </div>
+        </fieldset>
+        <input type="checkbox" name="botcheck" class="hidden-field" tabindex="-1" autocomplete="off" />
+        <div class="modal-actions">
+          <button type="submit" class="btn">Absenden</button>
+          <button type="button" class="btn-ghost" id="umfrage-later">Vielleicht später</button>
+        </div>
+        <p class="survey-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </dialog>
+
   <script>
+    const modal = document.getElementById('umfrage-modal') as HTMLDialogElement | null;
     const form = document.getElementById('ki-umfrage') as HTMLFormElement | null;
-    if (form) {
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const status = form.querySelector('.survey-status') as HTMLElement;
-        const btn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
-        const data = new FormData(form);
-        if (data.get('botcheck')) return;
-        const auswahl = data.getAll('ki_einsatz').join(', ') || 'keine Angabe';
-        btn.disabled = true;
-        status.textContent = 'Wird gesendet …';
-        try {
-          const res = await fetch('https://api.web3forms.com/submit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({
-              access_key: form.dataset.key,
-              subject: 'Neue Umfrage-Antwort auf ki-buechhaltig.ch',
-              from_name: 'KI-CFO Umfrage',
-              Rolle: data.get('rolle'),
-              'KI-Einsatz': auswahl,
-            }),
-          });
-          const json = await res.json();
-          if (json.success) {
-            form.innerHTML = '<p><strong>Danke!</strong> Deine Antwort ist angekommen.</p>';
-          } else {
-            throw new Error(json.message);
-          }
-        } catch {
-          status.textContent = 'Senden hat nicht geklappt. Versuch es später nochmal oder schreib mir direkt: florian@lussis.ch';
-          btn.disabled = false;
-        }
-      });
+    const openBtn = document.getElementById('umfrage-open');
+    const laterBtn = document.getElementById('umfrage-later');
+
+    const done = () => localStorage.getItem('umfrageDone') === '1';
+    const later = () => sessionStorage.getItem('umfrageLater') === '1';
+
+    function openModal() {
+      if (modal && !modal.open) modal.showModal();
     }
+    function closeModal() {
+      if (modal?.open) modal.close();
+    }
+
+    openBtn?.addEventListener('click', openModal);
+    laterBtn?.addEventListener('click', () => {
+      sessionStorage.setItem('umfrageLater', '1');
+      closeModal();
+    });
+    modal?.addEventListener('cancel', () => sessionStorage.setItem('umfrageLater', '1'));
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        sessionStorage.setItem('umfrageLater', '1');
+        closeModal();
+      }
+    });
+
+    // Auto-open once per visitor, but only after the cookie banner is answered.
+    function scheduleAutoOpen() {
+      if (!done() && !later()) setTimeout(openModal, 900);
+    }
+    if ((window as any).__consentResolved) {
+      scheduleAutoOpen();
+    } else {
+      window.addEventListener('consent:resolved', scheduleAutoOpen, { once: true });
+    }
+
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const status = form.querySelector('.survey-status') as HTMLElement;
+      const btn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+      const data = new FormData(form);
+      if (data.get('botcheck')) return;
+      const auswahl = data.getAll('ki_einsatz').join(', ') || 'keine Angabe';
+      btn.disabled = true;
+      status.textContent = 'Wird gesendet …';
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            access_key: form.dataset.key,
+            subject: 'Neue Umfrage-Antwort auf ki-buechhaltig.ch',
+            from_name: 'KI-CFO Umfrage',
+            Rolle: data.get('rolle'),
+            'KI-Einsatz': auswahl,
+          }),
+        });
+        const json = await res.json();
+        if (json.success) {
+          localStorage.setItem('umfrageDone', '1');
+          form.innerHTML = '<p><strong>Danke!</strong> Deine Antwort ist angekommen.</p>';
+          setTimeout(closeModal, 1600);
+        } else {
+          throw new Error(json.message);
+        }
+      } catch {
+        status.textContent = 'Senden hat nicht geklappt. Versuch es später nochmal oder schreib mir direkt: florian@lussis.ch';
+        btn.disabled = false;
+      }
+    });
   </script>
 </Base>
